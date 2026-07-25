@@ -13,6 +13,7 @@ const state = {
   priceMode: localStorage.getItem('priceMode') || 'fut',   // 'fut' | 'cfd' — bell axis/tooltip unit
   basis: 30,                                   // futures − CFD gap; refreshed from plan.json
    fontScale: +(localStorage.getItem('fontScale')) || 1,
+     tvBroker: localStorage.getItem('tvBroker') || 'oanda', // 'oanda' | 'city' — TradingView chart price source
 };
 
 // convert a futures price to the displayed unit
@@ -669,7 +670,7 @@ function setView(v) {
 // NOTE: COMEX:GC1! (gold futures) needs a CME data subscription on TradingView and
 // won't load in the free widget. Default to spot gold (OANDA:XAUUSD, ~tracks GC).
 // allow_symbol_change is on, so you can switch to your own GC symbol in the chart.
-const TV_SYMBOL = 'OANDA:XAUUSD';
+const TV_SYMBOLS = { oanda: 'OANDA:XAUUSD', city: 'CITYINDEX:XAUUSD' };
 function mountTradingView() {
   const c = $('tv');
   const dark = state.theme === 'dark';
@@ -683,7 +684,7 @@ function mountTradingView() {
   s.async = true;
   s.textContent = JSON.stringify({
     autosize: true,
-    symbol: TV_SYMBOL,
+    symbol: TV_SYMBOLS[state.tvBroker] || TV_SYMBOLS.oanda,
     interval: 'D',
     range: '6M',                 // default to last 6 months (not all history → not squished)
     timezone: 'Asia/Bangkok',
@@ -804,4 +805,24 @@ document.addEventListener('DOMContentLoaded', () => {
    const incBtn = document.getElementById('btn-font-inc');
    if (decBtn) decBtn.addEventListener('click', () => stepFont(-1));
    if (incBtn) incBtn.addEventListener('click', () => stepFont(1));
+});
+
+
+// ── TradingView broker switch (OANDA / City Index) ──
+function setTvBroker(b) {
+     state.tvBroker = b;
+     localStorage.setItem('tvBroker', b);
+     const oandaBtn = document.getElementById('tv-oanda');
+     const cityBtn = document.getElementById('tv-city');
+     if (oandaBtn) oandaBtn.classList.toggle('active', b === 'oanda');
+     if (cityBtn) cityBtn.classList.toggle('active', b === 'city');
+     mountTradingView();
+}
+document.addEventListener('DOMContentLoaded', () => {
+     const oandaBtn = document.getElementById('tv-oanda');
+     const cityBtn = document.getElementById('tv-city');
+     if (oandaBtn) oandaBtn.addEventListener('click', () => setTvBroker('oanda'));
+     if (cityBtn) cityBtn.addEventListener('click', () => setTvBroker('city'));
+     if (oandaBtn) oandaBtn.classList.toggle('active', state.tvBroker === 'oanda');
+     if (cityBtn) cityBtn.classList.toggle('active', state.tvBroker === 'city');
 });
