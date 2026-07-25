@@ -109,7 +109,13 @@
 
   <!-- ── TRADINGVIEW CHART ── -->
   <section class="chart-wrap">
-    <div class="section-title">กราฟ TradingView · วางแผนรายวัน</div>
+  <div class="chart-top">
+  <div class="section-title">กราฟ TradingView · วางแผนรายวัน</div>
+    <div class="mini-seg" title="สลับโบรกเกอร์ราคาในกราฟ">
+      <button class="mini-btn active" id="tv-oanda">OANDA</button>
+      <button class="mini-btn" id="tv-city">City Index</button>
+    </div>
+  </div>
     <div class="tv-frame">
       <div class="tradingview-widget-container" id="tv">
         <div class="tradingview-widget-container__widget"></div>
