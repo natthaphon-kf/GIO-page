@@ -12,6 +12,7 @@ const state = {
   lastDataTimeFetch: 0,
   priceMode: localStorage.getItem('priceMode') || 'fut',   // 'fut' | 'cfd' — bell axis/tooltip unit
   basis: 30,                                   // futures − CFD gap; refreshed from plan.json
+   fontScale: +(localStorage.getItem('fontScale')) || 1,
 };
 
 // convert a futures price to the displayed unit
@@ -782,3 +783,25 @@ function init() {
 }
 
 document.addEventListener('DOMContentLoaded', init);
+
+
+// ── font scale (A−/A+ buttons): zooms the whole page, persisted ──
+const FONT_STEPS = [0.85, 0.9, 0.95, 1, 1.05, 1.1, 1.15, 1.2, 1.3, 1.4];
+function applyFontScale() {
+   document.querySelector('.page').style.zoom = state.fontScale;
+   localStorage.setItem('fontScale', state.fontScale);
+}
+function stepFont(dir) {
+   let idx = 0, best = Infinity;
+   FONT_STEPS.forEach((v, i) => { const d = Math.abs(v - state.fontScale); if (d < best) { best = d; idx = i; } });
+   idx = Math.min(FONT_STEPS.length - 1, Math.max(0, idx + dir));
+   state.fontScale = FONT_STEPS[idx];
+   applyFontScale();
+}
+document.addEventListener('DOMContentLoaded', () => {
+   applyFontScale();
+   const decBtn = document.getElementById('btn-font-dec');
+   const incBtn = document.getElementById('btn-font-inc');
+   if (decBtn) decBtn.addEventListener('click', () => stepFont(-1));
+   if (incBtn) incBtn.addEventListener('click', () => stepFont(1));
+});
