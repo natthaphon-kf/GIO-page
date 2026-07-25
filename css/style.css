@@ -383,6 +383,7 @@ header {
 }
 .senti-frame iframe { display: block; width: 100%; border: 0; height: 132px; }
 .chart-wrap { margin-bottom: 24px; }
+.chart-top { display: flex; align-items: center; justify-content: space-between; gap: 8px; flex-wrap: wrap; margin-bottom: 8px; }
 .tv-frame {
   height: 520px;
   border: 1px solid var(--line);
